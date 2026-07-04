@@ -1,7 +1,0 @@
-/data/quiz_state.json
-/config.php
-/.env
-/vendor/
-.idea/
-.vscode/
-*.log

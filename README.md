@@ -3,23 +3,20 @@ Sistema de quiz colaborativo com painel de administrador e placar em tempo real,
 
 ✨ Funcionalidades
 Administrador
-
-Login com senha fixa (padrão: a)
+Login com senha fixa (padrão: Radioquiz)
 
 Iniciar / finalizar / resetar o quiz
 
 Ver lista de jogadores e placar atualizado em tempo real (via polling)
 
 Jogador
-
-Cadastro com nickname (único)
+Cadastro com nickname (único, convertido para maiúsculas)
 
 Responde às perguntas em sequência
 
-Visualiza seu desempenho e placar final, com detalhamento de cada resposta
+Visualiza seu desempenho e placar final, com detalhamento de cada resposta (certa/errada)
 
 Atualização automática
-
 A página do administrador e a sala de espera são atualizadas a cada 4 segundos via JavaScript (polling)
 
 Se o status do quiz mudar ou for resetado, a página recarrega automaticamente
@@ -34,19 +31,19 @@ HTML5, CSS3, JavaScript (vanilla)
 JSON para estado do quiz (arquivo quiz_state.json)
 
 📦 Instalação
-1. Clone o repositório
+Clone o repositório
+
 bash
 git clone https://github.com/seu-usuario/radioquiz.git
 cd radioquiz
-2. Crie o banco de dados
+Crie o banco de dados
 Execute o script db/schema.sql no seu SGBD (ex.: phpMyAdmin, MySQL CLI):
 
 sql
--- O script já cria o banco e as tabelas
 SOURCE db/schema.sql;
 Ou copie o conteúdo do arquivo e execute manualmente.
 
-3. Configure as credenciais do banco
+Configure as credenciais do banco
 Abra o arquivo db/database.php e ajuste as variáveis de conexão:
 
 php
@@ -56,13 +53,13 @@ $bdPassword = '';            // sua senha
 $bdData     = 'db_radioquiz'; // nome do banco criado
 ⚠️ Segurança: Para ambientes de produção, mova essas credenciais para um arquivo .env ou config.php fora do repositório e inclua-o no .gitignore.
 
-4. Permissões de escrita
-O arquivo data/quiz_state.json será criado automaticamente pelo sistema. Certifique-se de que o servidor web tenha permissão de escrita na pasta data/:
+Permissões de escrita
+O arquivo quiz_state.json (na raiz do projeto) será criado/atualizado pelo sistema. Certifique-se de que o servidor web tenha permissão de escrita na raiz do projeto (ou mova o arquivo para uma pasta protegida e ajuste o caminho em api/global.php).
 
 bash
-chmod 755 data/
-5. Acesse no navegador
-Coloque os arquivos no diretório do seu servidor (ex.: htdocs do XAMPP, ou publique em um host) e abra:
+chmod 755 .
+Acesse no navegador
+Coloque os arquivos no diretório do seu servidor (ex.: htdocs do XAMPP) e abra:
 
 text
 http://localhost/radioquiz/index.php
@@ -77,7 +74,7 @@ Quando o quiz estiver ativo, responda as 10 perguntas clicando na alternativa de
 Ao final, veja sua pontuação, quantas acertou e o detalhamento de cada resposta
 
 👨‍💼 Administrador
-Faça login usando o campo Password no topo da página (senha padrão: a) – se o formulário não aparecer, acesse diretamente admin_login.php (caso exista) ou use o campo na própria página inicial
+Faça login usando o campo Password no topo da página principal (senha padrão: Radioquiz)
 
 Controles disponíveis:
 
@@ -91,6 +88,7 @@ Durante o quiz, você vê a lista de jogadores e o placar em tempo real (atualiz
 
 🎨 Personalização
 Perguntas: edite o arquivo data/questions.php – cada pergunta é um array com pergunta, alternativas (A–D) e correta.
+Observação: atualmente as perguntas também estão duplicadas no index.php; para usar o arquivo externo, substitua a definição de $perguntas_quiz por require 'data/questions.php';.
 
 Estilo: modifique o arquivo css/style.css para alterar cores, fontes, etc.
 
@@ -98,12 +96,14 @@ QR Code: substitua a imagem img/qr-code.svg pelo código QR do link do seu quiz.
 
 Ícone: troque img/atom.png pelo seu favicon.
 
-🔒 Segurança
-A senha do administrador está hardcoded em api/admin.php ($password === 'a'). Em produção, recomenda‑se:
+🔒 Segurança (recomendações)
+A senha do administrador está hardcoded em api/admin.php ($password == 'Radioquiz'). Em produção, recomenda‑se:
 
 Armazenar a senha com hash (ex.: password_hash()) e verificar com password_verify()
 
 Ler a senha de uma variável de ambiente (ex.: $_ENV['ADMIN_PASS'])
+
+Todas as consultas ao banco devem usar prepared statements (a maioria já está, mas revise funções como record_user e update_player).
 
 O arquivo quiz_state.json contém dados de estado; coloque‑o fora da raiz pública ou proteja com .htaccess.
 
